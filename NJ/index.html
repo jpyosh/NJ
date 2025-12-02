@@ -108,6 +108,18 @@
                 };
                 
                 try {
+                    // Check if storage is available
+                    if (!window.storage) {
+                        console.error('Storage API not available');
+                        alert('Storage is not available yet. Your order details:\n\n' + 
+                              'Order: ' + orderData.orderNumber + '\n' +
+                              'Name: ' + customerName + '\n' +
+                              'Email: ' + customerEmail + '\n' +
+                              'Total: ₱' + totalPrice.toLocaleString('en-PH') + '\n\n' +
+                              'Please screenshot this and contact us directly.');
+                        return;
+                    }
+                    
                     // Save to storage
                     const existingOrders = await window.storage.get('orders');
                     const orders = existingOrders ? JSON.parse(existingOrders.value) : [];
@@ -117,7 +129,13 @@
                     setOrderSubmitted(true);
                 } catch (error) {
                     console.error('Error saving order:', error);
-                    alert('There was an error submitting your order. Please try again.');
+                    alert('There was an error submitting your order. Please screenshot your order details and contact us directly:\n\n' +
+                          'Order: ' + orderData.orderNumber + '\n' +
+                          'Name: ' + customerName + '\n' +
+                          'Email: ' + customerEmail + '\n' +
+                          'Phone: ' + customerPhone + '\n' +
+                          'Address: ' + customerAddress + '\n' +
+                          'Total: ₱' + totalPrice.toLocaleString('en-PH'));
                 }
             };
 
