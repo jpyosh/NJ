@@ -109,7 +109,7 @@
                     const fileName = `${orderNumber}.${fileExt}`;
                     
                     const { error: uploadError } = await supabase.storage
-                        .from('receipt')
+                        .from('receipts')
                         .upload(fileName, paymentReceipt);
                     
                     if (uploadError) {
@@ -118,7 +118,7 @@
                     
                     // 2. Get public URL for the receipt
                     const { data: urlData } = supabase.storage
-                        .from('receipt')
+                        .from('receipts')
                         .getPublicUrl(fileName);
                     
                     const receiptUrl = urlData.publicUrl;
