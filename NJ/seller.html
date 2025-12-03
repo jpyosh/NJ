@@ -129,9 +129,9 @@
                 }
             };
 
-            const totalRevenue = orders
-                .filter(o => o.status === 'completed')
-                .reduce((sum, order) => sum + order.totalPrice, 0);
+                const totalRevenue = orders
+                    .filter(o => o.status === 'completed')
+                    .reduce((sum, order) => sum + order.total_price, 0);
 
             const pendingOrders = orders.filter(o => o.status === 'pending').length;
 
@@ -398,12 +398,13 @@
                                         <h3 className="font-semibold text-lg mb-3">Payment Receipt</h3>
                                         {selectedOrder.receipt ? (
                                             <div className="border rounded-lg p-4 bg-gray-50">
-                                                <img 
-                                                    src={selectedOrder.receipt} 
-                                                    alt="Payment Receipt" 
-                                                    className="max-w-full rounded-lg shadow-lg cursor-pointer"
-                                                    onClick={() => window.open(selectedOrder.receipt)}
-                                                />
+                                                <a href={selectedOrder.receipt} target="_blank" rel="noopener noreferrer">
+                                                    <img 
+                                                        src={selectedOrder.receipt} 
+                                                        alt="Payment Receipt" 
+                                                        className="max-w-full rounded-lg shadow-lg cursor-pointer"
+                                                    />
+                                                </a>
                                                 <p className="text-sm text-gray-600 mt-2 text-center">Click image to view full size</p>
                                             </div>
                                         ) : (
