@@ -116,7 +116,10 @@
                     if (orderToDelete && orderToDelete.receipt) {
                         // Extract filename from URL
                         const receiptUrl = orderToDelete.receipt;
-                        const fileName = receiptUrl.split('/').pop().split('?')[0];
+                        const urlParts = receiptUrl.split('/receipts/');
+                        const fileName = urlParts[1] ? urlParts[1].split('?')[0] : receiptUrl.split('/').pop().split('?')[0];
+                        
+                        console.log('Attempting to delete file:', fileName);
                         
                         const { error: storageError } = await supabase.storage
                             .from('receipts')
@@ -124,7 +127,7 @@
                         
                         if (storageError) {
                             console.error('Error deleting receipt from storage:', storageError);
-                            // Don't throw error here, order is already deleted
+                            alert('Order deleted but failed to remove receipt image: ' + storageError.message);
                         }
                     }
                     
