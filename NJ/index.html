@@ -65,6 +65,7 @@
 
             const designs = ['BUNNIES - WHITE', 'BUNNIES - BLUE', 'SUPERNATURAL - PANDA', 'SUPERNATURAL - CHI', 'SUPERNATURAL - BRED'];
             const sizes = ['SMALL', 'MEDIUM', 'LARGE', 'XL', 'XXL', 'XXXL'];
+            const SHIPPING_FEE = 150;
             
             const designImages = {
                 'BUNNIES - WHITE': 'BUNNIES-WHITE.jpg',
@@ -164,6 +165,8 @@
                             customer_address: customerAddress,
                             items: orderItems,
                             total_items: totalItems,
+                            subtotal: subtotal,
+                            shipping_fee: SHIPPING_FEE,
                             total_price: totalPrice,
                             receipt: receiptUrl,
                             status: 'pending'
@@ -186,6 +189,8 @@
                                     `${idx + 1}. ${item.design} - Size ${item.size} - Qty: ${item.quantity} - ₱${(designPrices[item.design] * item.quantity).toLocaleString('en-PH', {minimumFractionDigits: 2})}`
                                 ).join('\n'),
                                 total_items: totalItems,
+                                subtotal: `₱${subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`,
+                                shipping_fee: `₱${SHIPPING_FEE.toLocaleString('en-PH', {minimumFractionDigits: 2})}`,
                                 total_price: `₱${totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}`,
                                 customer_address: customerAddress,
                                 customer_phone: customerPhone || 'Not provided'
@@ -224,7 +229,8 @@
             };
 
             const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
-            const totalPrice = orderItems.reduce((sum, item) => sum + (designPrices[item.design] * item.quantity), 0);
+            const subtotal = orderItems.reduce((sum, item) => sum + (designPrices[item.design] * item.quantity), 0);
+            const totalPrice = subtotal + (orderItems.length > 0 ? SHIPPING_FEE : 0);
 
             if (orderSubmitted) {
                 return (
@@ -268,7 +274,11 @@
                                 <h3 className="font-semibold text-base sm:text-lg mb-2 sm:mb-3">GCash Payment Information</h3>
                                 <p className="text-lg sm:text-xl font-bold text-gray-800 mb-2">09672414410</p>
                                 <p className="text-base sm:text-lg text-gray-700">Jimmy Boy P.</p>
-                                <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-3 sm:mt-4">Amount: ₱{totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                <div className="mt-3 sm:mt-4">
+                                    <p className="text-base sm:text-lg text-gray-700">Subtotal: ₱{subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-base sm:text-lg text-gray-700">Shipping Fee: ₱{SHIPPING_FEE.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-2">Total Amount: ₱{totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                </div>
                             </div>
 
                             <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 text-left">
@@ -284,8 +294,10 @@
                                         <p key={item.id} className="text-xs sm:text-sm text-gray-700">
                                             {index + 1}. {item.design} - {item.size} - Qty: {item.quantity} - ₱{(designPrices[item.design] * item.quantity).toLocaleString('en-PH', {minimumFractionDigits: 2})}
                                         </p>
-                                    ))}
+                                    ))}}
                                     <p className="mt-2 font-semibold text-sm sm:text-base">Total Items: {totalItems}</p>
+                                    <p className="text-sm sm:text-base text-gray-700">Subtotal: ₱{subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-sm sm:text-base text-gray-700">Shipping Fee: ₱{SHIPPING_FEE.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
                                     <p className="font-semibold text-base sm:text-lg text-blue-600">Total Price: ₱{totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
                                 </div>
                             </div>
@@ -375,8 +387,10 @@
                                         <p key={item.id} className="text-sm text-gray-700">
                                             {index + 1}. {item.design} - {item.size} - Qty: {item.quantity} - ₱{(designPrices[item.design] * item.quantity).toLocaleString('en-PH', {minimumFractionDigits: 2})}
                                         </p>
-                                    ))}
+                                    ))}}
                                     <p className="mt-2 font-semibold">Total Items: {totalItems}</p>
+                                    <p className="text-gray-700">Subtotal: ₱{subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-gray-700">Shipping Fee: ₱{SHIPPING_FEE.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
                                     <p className="font-semibold text-lg text-blue-600">Total Price: ₱{totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
                                 </div>
                             </div>
@@ -572,7 +586,9 @@
                                     ))}
                                 </div>
                                 <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-blue-50 rounded-lg">
-                                    <p className="text-base sm:text-lg font-bold text-gray-800">Total: ₱{totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-sm sm:text-base text-gray-700">Subtotal: ₱{subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-sm sm:text-base text-gray-700">Shipping Fee: ₱{SHIPPING_FEE.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                                    <p className="text-base sm:text-lg font-bold text-gray-800 mt-2">Total: ₱{totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
                                 </div>
                             </div>
                         )}
