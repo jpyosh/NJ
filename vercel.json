@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/NJ/index.html" },
+    { "source": "/seller", "destination": "/NJ/seller.html" },
+    { "source": "/(.*)", "destination": "/NJ/$1" }
+  ]
+}
