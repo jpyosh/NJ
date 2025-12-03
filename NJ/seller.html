@@ -101,12 +101,32 @@
                 if (!confirm('Are you sure you want to delete this order?')) return;
                 
                 try {
+                    // Find the order to get the receipt URL
+                    const orderToDelete = orders.find(order => order.id === id);
+                    
+                    // Delete the order from database
                     const { error } = await supabase
                         .from('orders')
                         .delete()
                         .eq('id', id);
                     
                     if (error) throw error;
+                    
+                    // Delete the receipt from storage if it exists
+                    if (orderToDelete && orderToDelete.receipt) {
+                        // Extract filename from URL
+                        const receiptUrl = orderToDelete.receipt;
+                        const fileName = receiptUrl.split('/').pop().split('?')[0];
+                        
+                        const { error: storageError } = await supabase.storage
+                            .from('receipts')
+                            .remove([fileName]);
+                        
+                        if (storageError) {
+                            console.error('Error deleting receipt from storage:', storageError);
+                            // Don't throw error here, order is already deleted
+                        }
+                    }
                     
                     const updatedOrders = orders.filter(order => order.id !== id);
                     setOrders(updatedOrders);
