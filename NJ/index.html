@@ -18,8 +18,8 @@
         const { useState } = React;
 
         // ⚠️ REPLACE THESE WITH YOUR SUPABASE CREDENTIALS
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';  // e.g., 'https://xxxxx.supabase.co'
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+        const SUPABASE_URL = 'https://wbggsqgieretrfmnsfgh.supabase.co';  // e.g., 'https://xxxxx.supabase.co'
+        const SUPABASE_ANON_KEY = 'sb_publishable_O_VttfBOYC2op3Ej8oJjmg_ALIqEemT';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -101,27 +101,43 @@
                 }
                 
                 setIsSubmitting(true);
-                
                 const orderNumber = 'ORD-' + Date.now();
                 
                 try {
-                    const { data, error } = await supabase
+                    // 1. Upload receipt to Supabase Storage
+                    const fileExt = paymentReceipt.name.split('.').pop();
+                    const fileName = `${orderNumber}.${fileExt}`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('receipt')
+                        .upload(fileName, paymentReceipt);
+                    
+                    if (uploadError) {
+                        throw new Error('Failed to upload receipt: ' + uploadError.message);
+                    }
+                    
+                    // 2. Get public URL for the receipt
+                    const { data: urlData } = supabase.storage
+                        .from('receipt')
+                        .getPublicUrl(fileName);
+                    
+                    const receiptUrl = urlData.publicUrl;
+                    
+                    // 3. Insert order into database
+                    const { error } = await supabase
                         .from('orders')
-                        .insert([
-                            {
-                                order_number: orderNumber,
-                                customer_name: customerName,
-                                customer_email: customerEmail,
-                                customer_phone: customerPhone || null,
-                                customer_address: customerAddress,
-                                items: orderItems,
-                                total_items: totalItems,
-                                total_price: totalPrice,
-                                receipt: receiptPreview,
-                                status: 'pending'
-                            }
-                        ])
-                        .select();
+                        .insert({
+                            order_number: orderNumber,
+                            customer_name: customerName,
+                            customer_email: customerEmail,
+                            customer_phone: customerPhone || null,
+                            customer_address: customerAddress,
+                            items: orderItems,
+                            total_items: totalItems,
+                            total_price: totalPrice,
+                            receipt: receiptUrl,
+                            status: 'pending'
+                        });
                     
                     if (error) {
                         throw error;
@@ -130,14 +146,7 @@
                     setOrderSubmitted(true);
                 } catch (error) {
                     console.error('Error saving order:', error);
-                    alert('There was an error submitting your order. Please screenshot your order details and contact us directly:\n\n' +
-                          'Order: ' + orderNumber + '\n' +
-                          'Name: ' + customerName + '\n' +
-                          'Email: ' + customerEmail + '\n' +
-                          'Phone: ' + customerPhone + '\n' +
-                          'Address: ' + customerAddress + '\n' +
-                          'Total: ₱' + totalPrice.toLocaleString('en-PH') + '\n\n' +
-                          'Error: ' + error.message);
+                    alert('There was an error submitting your order. Please try again.\n\nError: ' + error.message);
                 } finally {
                     setIsSubmitting(false);
                 }
