@@ -6,6 +6,7 @@
     <title>New Jeans Bunnies Tee - Order Now</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -36,6 +37,9 @@
 
     <script type="text/babel">
         const { useState } = React;
+
+        // Initialize EmailJS
+        emailjs.init('jkKCcN2HrKRYRkgPl');
 
         // ⚠️ REPLACE THESE WITH YOUR SUPABASE CREDENTIALS
         const SUPABASE_URL = 'https://wbggsqgieretrfmnsfgh.supabase.co';  // e.g., 'https://xxxxx.supabase.co'
@@ -161,6 +165,31 @@
                     
                     if (error) {
                         throw error;
+                    }
+                    
+                    // 4. Send confirmation email
+                    try {
+                        await emailjs.send(
+                            'service_se6pp1r',
+                            'template_4j7tl8c',
+                            {
+                                to_email: customerEmail,
+                                to_name: customerName,
+                                order_number: orderNumber,
+                                order_items: orderItems.map((item, idx) => 
+                                    `${idx + 1}. ${item.design} - Size ${item.size} - Qty: ${item.quantity} - ₱${(designPrices[item.design] * item.quantity).toLocaleString('en-PH', {minimumFractionDigits: 2})}`
+                                ).join('\n'),
+                                total_items: totalItems,
+                                total_price: `₱${totalPrice.toLocaleString('en-PH', {minimumFractionDigits: 2})}`,
+                                customer_address: customerAddress,
+                                customer_phone: customerPhone || 'Not provided'
+                            },
+                            'jkKCcN2HrKRYRkgPl'
+                        );
+                        console.log('Confirmation email sent successfully');
+                    } catch (emailError) {
+                        console.error('Failed to send confirmation email:', emailError);
+                        // Don't fail the order if email fails
                     }
                     
                     setOrderSubmitted(true);
@@ -368,28 +397,23 @@
             return (
                 <div className="max-w-6xl mx-auto">
                     <div className="relative overflow-hidden rounded-3xl mb-8 shadow-2xl border border-white/20">
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-purple-600/90 to-pink-600/90 backdrop-blur-xl"></div>
-                        <div className="relative">
-                            <div className="absolute inset-0 opacity-20">
+                        <img 
+                            src="NJ_HEADER.jpg" 
+                            alt="New Jeans Header"
+                            className="w-full h-full object-cover absolute inset-0"
+                        />
+                        <div className="relative px-6 py-12 sm:py-20 text-center">
+                            <div className="inline-block animate-bounce mb-6">
                                 <img 
-                                    src="NJ_HEADER.jpg" 
-                                    alt="New Jeans Header"
-                                    className="w-full h-full object-cover"
+                                    src="gif.gif" 
+                                    alt="New Jeans GIF"
+                                    className="h-20 sm:h-28 mx-auto rounded-2xl shadow-2xl ring-4 ring-white/30"
                                 />
                             </div>
-                            <div className="relative px-6 py-12 sm:py-20 text-center">
-                                <div className="inline-block animate-bounce mb-6">
-                                    <img 
-                                        src="gif.gif" 
-                                        alt="New Jeans GIF"
-                                        className="h-20 sm:h-28 mx-auto rounded-2xl shadow-2xl ring-4 ring-white/30"
-                                    />
-                                </div>
-                                <h1 className="text-4xl sm:text-6xl font-black text-white mb-4 tracking-tight drop-shadow-2xl">
-                                    NEW JEANS BUNNIES TEE
-                                </h1>
-                                <p className="text-lg sm:text-xl text-white/90 font-medium max-w-2xl mx-auto">Premium Fan-Made Limited Edition Collection</p>
-                            </div>
+                            <h1 className="text-4xl sm:text-6xl font-black text-white mb-4 tracking-tight drop-shadow-2xl">
+                                NEW JEANS BUNNIES TEE
+                            </h1>
+                            <p className="text-lg sm:text-xl text-white/90 font-medium max-w-2xl mx-auto">Premium Fan-Made Limited Edition Collection</p>
                         </div>
                     </div>
 
