@@ -75,6 +75,7 @@
             const [orderSubmitted, setOrderSubmitted] = useState(false);
             const [isSubmitting, setIsSubmitting] = useState(false);
             const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+            const [isLoadingToPayment, setIsLoadingToPayment] = useState(false);
 
             const designs = ['BUNNIES - WHITE', 'BUNNIES - BLUE', 'SUPERNATURAL - PANDA', 'SUPERNATURAL - CHI', 'SUPERNATURAL - BRED'];
             const sizes = ['SMALL', 'MEDIUM', 'LARGE', 'XL', 'XXL', 'XXXL'];
@@ -128,7 +129,12 @@
             };
             
             const confirmOrder = () => {
-                setShowPayment(true);
+                setIsLoadingToPayment(true);
+                // Small delay to show loading state
+                setTimeout(() => {
+                    setShowPayment(true);
+                    setIsLoadingToPayment(false);
+                }, 800);
             };
             
             const handleReceiptUpload = (e) => {
@@ -245,6 +251,20 @@
             const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
             const subtotal = orderItems.reduce((sum, item) => sum + (designPrices[item.design] * item.quantity), 0);
             const totalPrice = subtotal + (orderItems.length > 0 ? SHIPPING_FEE : 0);
+
+            if (isLoadingToPayment) {
+                return (
+                    <div className="max-w-2xl mx-auto bg-white/95 backdrop-blur-lg rounded-lg shadow-2xl p-8 sm:p-12 border border-white/20">
+                        <div className="text-center py-12">
+                            <div className="w-16 h-16 mx-auto mb-6">
+                                <div className="loading-spinner" style={{width: '64px', height: '64px', borderWidth: '4px', borderTopColor: '#2563eb'}}></div>
+                            </div>
+                            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Loading Payment Details...</h2>
+                            <p className="text-sm sm:text-base text-gray-600">Please wait a moment</p>
+                        </div>
+                    </div>
+                );
+            }
 
             if (orderSubmitted) {
                 return (
