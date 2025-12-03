@@ -385,8 +385,8 @@
                                         {designs.map(design => (
                                             <div
                                                 key={design}
-                                                onClick={() => setCurrentDesign(design)}
-                                                className={`cursor-pointer rounded-lg border-4 overflow-hidden transition-all duration-300 ${
+                                                onClick={() => setCurrentDesign(currentDesign === design ? '' : design)}
+                                                className={`cursor-pointer rounded-lg border-4 overflow-hidden transition-all duration-300 group ${
                                                     currentDesign === design 
                                                         ? 'border-blue-600 shadow-2xl scale-100' 
                                                         : currentDesign && currentDesign !== design
@@ -394,15 +394,17 @@
                                                         : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                             >
-                                                <img 
-                                                    src={designImages[design]} 
-                                                    alt={design}
-                                                    className={`w-full object-cover transition-all duration-300 ${
-                                                        currentDesign === design 
-                                                            ? 'h-64 sm:h-96' 
-                                                            : 'h-40 sm:h-48'
-                                                    }`}
-                                                />
+                                                <div className="overflow-hidden">
+                                                    <img 
+                                                        src={designImages[design]} 
+                                                        alt={design}
+                                                        className={`w-full object-cover transition-all duration-300 group-hover:scale-110 ${
+                                                            currentDesign === design 
+                                                                ? 'h-64 sm:h-96' 
+                                                                : 'h-40 sm:h-48'
+                                                        }`}
+                                                    />
+                                                </div>
                                                 <div className={`p-2 sm:p-3 text-center font-medium ${
                                                     currentDesign === design 
                                                         ? 'bg-blue-600 text-white' 
