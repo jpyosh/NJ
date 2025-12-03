@@ -19,7 +19,7 @@
 
         // Supabase credentials
         const SUPABASE_URL = 'https://wbggsqgieretrfmnsfgh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiZ2dzcWdpZXJldHJmbW5zZmdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMyMzk4NTksImV4cCI6MjA0ODgxNTg1OX0.sb_publishable_O_VttfBOYC2op3Ej8oJjmg_ALIqEemT';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiZ2dzcWdpZXJldHJmbW5zZmdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3MTI2MDQsImV4cCI6MjA4MDI4ODYwNH0.k-tbuQLXtNvSWzulsGQUmAg0qwl201YdtjQCJNTJcTo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -59,11 +59,14 @@
                         .select('*')
                         .order('created_at', { ascending: false });
                     
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Supabase error:', error);
+                        throw new Error(error.message || 'Failed to load orders');
+                    }
                     setOrders(data || []);
                 } catch (error) {
                     console.error('Error loading orders:', error);
-                    alert('Failed to load orders');
+                    alert('Failed to load orders: ' + error.message);
                 } finally {
                     setLoading(false);
                 }
